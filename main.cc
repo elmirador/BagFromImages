@@ -51,6 +51,12 @@ int main(int argc, char **argv)
 
         cv::Mat im = cv::imread(filenames[i],CV_LOAD_IMAGE_COLOR);
         cv_bridge::CvImage cvImage;
+	for (cv::MatIterator_<cv::Vec3b> it = im.begin<cv::Vec3b>(); it != im.end<cv::Vec3b>(); it++) {
+		int tmp;
+		tmp = (*it)[0];
+		(*it)[0] = (*it)[2];
+		(*it)[2] = tmp;
+	}
         cvImage.image = im;
         cvImage.encoding = sensor_msgs::image_encodings::RGB8;
         cvImage.header.stamp = t;
