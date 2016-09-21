@@ -19,9 +19,9 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "BagFromImages");
 
-    if(argc!=5)
+    if(argc!=6)
     {
-        cerr << "Usage: rosrun BagFromImages BagFromImages <path to image directory> <image extension .ext> <frequency> <path to output bag>" << endl;
+        cerr << "Usage: rosrun BagFromImages BagFromImages <path to image directory> <image extension .ext> <frequency> <exchange BGR> <path to output bag>" << endl;
         return 0;
     }
 
@@ -36,8 +36,12 @@ int main(int argc, char **argv)
     // Frequency
     double freq = atof(argv[3]);
 
+    // Exchange
+    bool exchange = false;
+    if (argv[4][0]=='Y' || argv[4][0]=='y') exchange = true;
+
     // Output bag
-    rosbag::Bag bag_out(argv[4],rosbag::bagmode::Write);
+    rosbag::Bag bag_out(argv[5],rosbag::bagmode::Write);
 
     ros::Time t = ros::Time::now();
 
@@ -51,7 +55,7 @@ int main(int argc, char **argv)
 
         cv::Mat im = cv::imread(filenames[i],CV_LOAD_IMAGE_COLOR);
         cv_bridge::CvImage cvImage;
-	for (cv::MatIterator_<cv::Vec3b> it = im.begin<cv::Vec3b>(); it != im.end<cv::Vec3b>(); it++) {
+	if (exchange) for (cv::MatIterator_<cv::Vec3b> it = im.begin<cv::Vec3b>(); it != im.end<cv::Vec3b>(); it++) {
 		int tmp;
 		tmp = (*it)[0];
 		(*it)[0] = (*it)[2];
